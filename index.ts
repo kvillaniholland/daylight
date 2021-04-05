@@ -415,6 +415,7 @@ const Commandline = {
         tasksStore[index] = { ...task, start, inProgress: true };
         const newTasks = Tasks.rearrange(tasksStore);
         Tasks.updateTasksStore(newTasks);
+        Tasks.rearrange(tasksStore);
         Data.save(tasksStore);
     },
 
