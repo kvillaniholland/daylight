@@ -85,7 +85,11 @@ const Tasks = {
                     const prev = index > 0 && tasks[index - 1];
                     const prevEnd = prev ? Tasks.getFinishTime(prev) : null;
 
-                    if (prev && prevEnd.valueOf() < task.start.valueOf()) {
+                    if (
+                        prev &&
+                        prevEnd.valueOf() < task.start.valueOf() &&
+                        !task.inProgress
+                    ) {
                         task.start = prevEnd;
                         changed = true;
                     }
@@ -119,6 +123,7 @@ const Tasks = {
                         Tasks.isLocked(next)
                     ) {
                         task.start = Tasks.getFinishTime(next);
+                        changed = true;
                     }
 
                     if (
@@ -190,6 +195,9 @@ const Tasks = {
 
 const Parsing = {
     parseDate: (input) => {
+        if (input === "now") {
+            return DateTime.local();
+        }
         const regex = /(\d{1,2}):(\d{1,2})(am|pm)/g;
         const [x, hour, minute, half] = regex.exec(input);
         return DateTime.fromObject({
