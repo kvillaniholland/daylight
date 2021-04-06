@@ -2,3 +2,4 @@
 - [ ] Would it be possible to keep track of how long things take and calc an average time for a task that happens often?
 - [ ] Make squishing work via "squish factor"
 - [ ] Give tasks IDs
+- [ ] Refactor to move modules into their own files
