@@ -1,12 +1,10 @@
 import { DateTime, Duration } from "luxon";
-import readlineSync from "readline-sync";
+import * as readlineSync from "readline-sync";
 import { TTask, Tasks } from "./Tasks";
 import Data from "./Data";
 import { Parsing, Formatting } from "./Formats";
 import Store from "./Store";
 import Utils from "./Utils";
-
-console.log(Data);
 
 export default {
     createOrEditTask(task = undefined) {
@@ -186,7 +184,7 @@ export default {
     },
 
     main() {
-        Data.load();
+        // Data.load();
         while (1) {
             this.printTasks(Store.tasksStore);
             console.log(

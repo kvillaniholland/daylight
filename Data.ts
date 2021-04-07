@@ -1,4 +1,4 @@
-import fs from "fs";
+import * as fs from "fs";
 import { DateTime, Duration } from "luxon";
 import { TTask } from "./Tasks";
 import Store from "./Store";
@@ -10,7 +10,7 @@ export default {
     },
     load() {
         try {
-            const savedData = require("./data.json");
+            const savedData = require("./saved.json");
             const parsed = savedData.map((task) => {
                 return {
                     ...task,
