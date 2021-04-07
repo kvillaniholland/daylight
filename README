@@ -1,7 +1,8 @@
+- [x] Find gaps?
+- [x] Give tasks IDs
+- [x] Refactor to move modules into their own files
 - [ ] Add routines to auto-add
 - [ ] Would it be possible to keep track of how long things take and calc an average time for a task that happens often?
 - [ ] Make squishing work via "squish factor"
-- [x] Give tasks IDs
-- [x] Refactor to move modules into their own files
 - [ ] Tests or WHATEVER
-- [ ] Find gaps?
+- [ ] Could use gap detector to rearrange schedule
