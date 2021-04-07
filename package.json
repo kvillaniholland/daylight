@@ -1,21 +1,31 @@
 {
-  "name": "daylight",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "dependencies": {
-    "luxon": "^1.26.0",
-    "readline-sync": "^1.4.10",
-    "typescript": "^4.2.3"
-  },
-  "scripts": {
-    "start": "ts-node index.ts"
-  },
-  "devDependencies": {
-    "@types/node": "^14.14.37",
-    "ts-node": "^9.1.1"
-  },
-  "prettier": {
-    "tabWidth": 4
-  }
+    "name": "daylight",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "scripts": {
+        "start": "ts-node index.ts",
+        "test": "ava"
+    },
+    "dependencies": {
+        "luxon": "^1.26.0",
+        "readline-sync": "^1.4.10",
+        "typescript": "^4.2.3"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.37",
+        "ava": "^3.15.0",
+        "ts-node": "^9.1.1"
+    },
+    "prettier": {
+        "tabWidth": 4
+    },
+    "ava": {
+        "extensions": [
+            "ts"
+        ],
+        "require": [
+            "ts-node/register"
+        ]
+    }
 }

@@ -57,7 +57,7 @@ export default {
             move,
             inProgress,
             completedAt: task ? task.completedAt : undefined,
-            id: task?.id || Utils.lastItem(Store.tasks)?.id + 1 || 0,
+            id: task?.id || 0,
         };
     },
 
@@ -79,7 +79,7 @@ export default {
             squish: false,
             move: true,
             inProgress: false,
-            id: Utils.lastItem(Store.tasks)?.id + 1 || 0,
+            id: 0,
         });
         const newTasks = Tasks.rearrange(Store.tasks);
         Store.resetTasksStore(newTasks);
@@ -130,8 +130,8 @@ export default {
 
     deleteTask() {
         const id = Number(this.prompt("Which?"));
+        Store.deleteTaskById(id);
         Utils.pipe(
-            Store.deleteTaskById(id),
             Tasks.rearrange,
             Store.resetTasksStore,
             Data.save

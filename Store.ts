@@ -13,14 +13,18 @@ class AppStore {
     }
 
     addTask(task: TTask) {
-        this._tasks.push(task);
+        const id =
+            this._tasks.reduce((prevMax, task) => {
+                return task.id > prevMax ? task.id : prevMax;
+            }, 0) + 1;
+        this._tasks.push({ ...task, id });
         return this.tasks;
     }
 
-    resetTasksStore(tasks: TTask[]) {
+    resetTasksStore = (tasks: TTask[]) => {
         this._tasks = tasks;
         return this.tasks;
-    }
+    };
 
     getTaskById(id: number) {
         return this._tasks.find((task) => task.id === id);
@@ -30,6 +34,7 @@ class AppStore {
         const index = this._tasks.findIndex((task) => task.id === id);
         const original = this._tasks[index];
         this._tasks[index] = { ...original, ...task };
+        return this.tasks;
     }
 
     deleteTaskById(id: number) {

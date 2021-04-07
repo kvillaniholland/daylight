@@ -149,12 +149,19 @@ export const Tasks = {
             const currentFinish = Tasks.getFinishTime(task);
             if (
                 nextTask &&
-                !task.completedAt &&
+                !nextTask.completedAt &&
+                !nextTask.inProgress &&
                 currentFinish.valueOf() < nextTask.start.valueOf()
             ) {
+                const start = DateTime.fromMillis(
+                    Math.max(
+                        currentFinish.valueOf(),
+                        DateTime.local().valueOf()
+                    )
+                );
                 gaps.push({
-                    start: currentFinish,
-                    duration: nextTask.start.diff(currentFinish),
+                    start,
+                    duration: nextTask.start.diff(start),
                 });
             }
         });
