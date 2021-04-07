@@ -7,7 +7,7 @@ import Store from "./Store";
 import Utils from "./Utils";
 
 export default {
-    createOrEditTask(task = undefined) {
+    createOrEditTask(task = undefined): TTask {
         const name = this.prompt("Task name?", task?.name);
         const duration = Parsing.parseDuration(
             this.prompt(
@@ -57,6 +57,7 @@ export default {
             move,
             inProgress,
             completedAt: task ? task.completedAt : undefined,
+            id: task?.id || Utils.lastItem(Store.tasks)?.id + 1 || 0,
         };
     },
 
@@ -78,6 +79,7 @@ export default {
             squish: false,
             move: true,
             inProgress: false,
+            id: Utils.lastItem(Store.tasks)?.id + 1 || 0,
         });
         const newTasks = Tasks.rearrange(Store.tasks);
         Store.resetTasksStore(newTasks);
@@ -94,26 +96,25 @@ export default {
     },
 
     editTask() {
-        const index = Number(this.prompt("Which?"));
-        const editedTask = this.createOrEditTask(Store.tasks[index]);
+        const id = Number(this.prompt("Which?"));
+        const editedTask = this.createOrEditTask(Store.getTaskById(id));
 
         // TODO - this really shouldn't be handled by the commandline module - there should be something inside Tasks to cope with it.
         // store original move/split/squish
         // then lock the task, so that if we edit start time / duration etc
         // those edits dont get immediately overwritten
         const { move, split, squish } = editedTask;
-        Store.tasks[index] = {
+        Store.updateTaskById(id, {
             ...editedTask,
             move: false,
             split: false,
             squish: false,
-        };
+        });
         const newTasks = Tasks.rearrange(Store.tasks);
 
         // now restore the original m/s/s before saving the result
-        // oops tasks need ids - we'll use name for now
         const editedTaskIndex = newTasks.find(
-            (task) => task.name == editedTask.name
+            (task) => task.id == editedTask.id
         );
         const spot = newTasks.indexOf(editedTaskIndex);
         newTasks[spot] = {
@@ -128,9 +129,9 @@ export default {
     },
 
     deleteTask() {
-        const index = Number(this.prompt("Which?"));
+        const id = Number(this.prompt("Which?"));
         Utils.pipe(
-            (tasks) => Tasks.deleteTask(tasks, index),
+            Store.deleteTaskById(id),
             Tasks.rearrange,
             Store.resetTasksStore,
             Data.save
@@ -146,12 +147,12 @@ export default {
     },
 
     finishTask() {
-        const index = Number(this.prompt("Which?"));
+        const id = Number(this.prompt("Which?"));
         const when = this.prompt(
             "When?",
             Formatting.formatTime(DateTime.local())
         );
-        Store.tasks[index].completedAt = Parsing.parseDate(when);
+        Store.updateTaskById(id, { completedAt: Parsing.parseDate(when) });
         Tasks.rearrange(Store.tasks);
         Data.save(Store.tasks);
     },
@@ -159,6 +160,7 @@ export default {
     printTasks(tasks: TTask[]) {
         console.table(
             Tasks.sortByStart(tasks).map((task) => ({
+                ID: task.id,
                 Name: task.name,
                 Start: Formatting.formatTime(task.start),
                 End: Formatting.formatTime(Tasks.getFinishTime(task)),
@@ -196,12 +198,12 @@ export default {
     },
 
     startTask() {
-        const index = Number(this.prompt("Which?"));
+        const id = Number(this.prompt("Which?"));
         const start = Parsing.parseDate(
             this.prompt("Start at?", Formatting.formatTime(DateTime.local()))
         );
-        const task = Store.tasks[index];
-        Store.tasks[index] = { ...task, start, inProgress: true };
+        const task = Store.getTaskById(id);
+        Store.updateTaskById(id, { ...task, start, inProgress: true });
         const newTasks = Tasks.rearrange(Store.tasks);
         Store.resetTasksStore(newTasks);
         Tasks.rearrange(Store.tasks);

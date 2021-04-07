@@ -3,6 +3,7 @@ import Store from "./Store";
 import Utils from "./Utils";
 
 export type TTask = {
+    id: number;
     start: typeof DateTime;
     duration: typeof Duration;
     name: string;
@@ -141,9 +142,6 @@ export const Tasks = {
                 ];
             }
         )(work);
-    },
-    deleteTask: (tasks: TTask[], removeIndex: number) => {
-        return tasks.filter((task, index) => index != removeIndex);
     },
     isLocked(task: TTask) {
         return !(task.split || task.move || task.squish);

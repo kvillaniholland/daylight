@@ -6,7 +6,7 @@ import Store from "./Store";
 export default {
     save(tasks: TTask[]) {
         const data = JSON.stringify(tasks);
-        fs.writeFileSync("data.json", data);
+        fs.writeFileSync("saved.json", data);
     },
     load() {
         try {
