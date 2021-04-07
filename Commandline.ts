@@ -21,7 +21,7 @@ export default {
                 task
                     ? Formatting.formatTime(task.start)
                     : Formatting.formatTime(
-                          Tasks.getFinishTime(Utils.lastItem(Store.tasksStore))
+                          Tasks.getFinishTime(Utils.lastItem(Store.tasks))
                       ) ?? Formatting.formatTime(DateTime.local())
             )
         );
@@ -64,7 +64,7 @@ export default {
         const regex = /([\w|\s]+)\s(\d+)m\s(\d+):(\d+)(am|pm)/g;
         const input = this.prompt("Task");
         const [x, name, duration, hour, minute, half] = regex.exec(input);
-        Store.tasksStore.push({
+        Store.addTask({
             start: DateTime.fromObject({
                 minute: Number(minute),
                 hour:
@@ -79,36 +79,36 @@ export default {
             move: true,
             inProgress: false,
         });
-        const newTasks = Tasks.rearrange(Store.tasksStore);
+        const newTasks = Tasks.rearrange(Store.tasks);
         Store.resetTasksStore(newTasks);
-        Data.save(Store.tasksStore);
+        Data.save(Store.tasks);
         console.log(this.SEP);
     },
 
     addTask() {
-        Store.tasksStore.push(this.createOrEditTask());
-        const newTasks = Tasks.rearrange(Store.tasksStore);
+        Store.addTask(this.createOrEditTask());
+        const newTasks = Tasks.rearrange(Store.tasks);
         Store.resetTasksStore(newTasks);
-        Data.save(Store.tasksStore);
+        Data.save(Store.tasks);
         console.log(this.SEP);
     },
 
     editTask() {
         const index = Number(this.prompt("Which?"));
-        const editedTask = this.createOrEditTask(Store.tasksStore[index]);
+        const editedTask = this.createOrEditTask(Store.tasks[index]);
 
         // TODO - this really shouldn't be handled by the commandline module - there should be something inside Tasks to cope with it.
         // store original move/split/squish
         // then lock the task, so that if we edit start time / duration etc
         // those edits dont get immediately overwritten
         const { move, split, squish } = editedTask;
-        Store.tasksStore[index] = {
+        Store.tasks[index] = {
             ...editedTask,
             move: false,
             split: false,
             squish: false,
         };
-        const newTasks = Tasks.rearrange(Store.tasksStore);
+        const newTasks = Tasks.rearrange(Store.tasks);
 
         // now restore the original m/s/s before saving the result
         // oops tasks need ids - we'll use name for now
@@ -124,7 +124,7 @@ export default {
         };
 
         Store.resetTasksStore(newTasks);
-        Data.save(Store.tasksStore);
+        Data.save(Store.tasks);
     },
 
     deleteTask() {
@@ -134,7 +134,7 @@ export default {
             Tasks.rearrange,
             Store.resetTasksStore,
             Data.save
-        )(Store.tasksStore);
+        )(Store.tasks);
     },
 
     runFlow() {
@@ -142,7 +142,7 @@ export default {
             Tasks.rearrange,
             Store.resetTasksStore,
             Data.save
-        )(Store.tasksStore);
+        )(Store.tasks);
     },
 
     finishTask() {
@@ -151,9 +151,9 @@ export default {
             "When?",
             Formatting.formatTime(DateTime.local())
         );
-        Store.tasksStore[index].completedAt = Parsing.parseDate(when);
-        Tasks.rearrange(Store.tasksStore);
-        Data.save(Store.tasksStore);
+        Store.tasks[index].completedAt = Parsing.parseDate(when);
+        Tasks.rearrange(Store.tasks);
+        Data.save(Store.tasks);
     },
 
     printTasks(tasks: TTask[]) {
@@ -184,9 +184,9 @@ export default {
     },
 
     main() {
-        // Data.load();
+        Data.load();
         while (1) {
-            this.printTasks(Store.tasksStore);
+            this.printTasks(Store.tasks);
             console.log(
                 `${this.SEP}\n1. Add Task\n2. Edit Task\n3. Finish Task\n4. Delete Task\n5. Run Flow\n6. Quick Add\n7. Start Task`
             );
@@ -200,12 +200,12 @@ export default {
         const start = Parsing.parseDate(
             this.prompt("Start at?", Formatting.formatTime(DateTime.local()))
         );
-        const task = Store.tasksStore[index];
-        Store.tasksStore[index] = { ...task, start, inProgress: true };
-        const newTasks = Tasks.rearrange(Store.tasksStore);
+        const task = Store.tasks[index];
+        Store.tasks[index] = { ...task, start, inProgress: true };
+        const newTasks = Tasks.rearrange(Store.tasks);
         Store.resetTasksStore(newTasks);
-        Tasks.rearrange(Store.tasksStore);
-        Data.save(Store.tasksStore);
+        Tasks.rearrange(Store.tasks);
+        Data.save(Store.tasks);
     },
 
     get commands() {
