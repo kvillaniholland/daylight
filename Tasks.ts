@@ -1,5 +1,4 @@
 import { DateTime, Duration } from "luxon";
-import Store from "./Store";
 import Utils from "./Utils";
 
 export type TTask = {
@@ -142,6 +141,24 @@ export const Tasks = {
                 ];
             }
         )(work);
+    },
+    findGaps: (tasks: TTask[]) => {
+        const gaps = [];
+        Tasks.sortByStart(tasks).forEach((task, index) => {
+            const nextTask = tasks[index + 1];
+            const currentFinish = Tasks.getFinishTime(task);
+            if (
+                nextTask &&
+                !task.completedAt &&
+                currentFinish.valueOf() < nextTask.start.valueOf()
+            ) {
+                gaps.push({
+                    start: currentFinish,
+                    duration: nextTask.start.diff(currentFinish),
+                });
+            }
+        });
+        return gaps;
     },
     isLocked(task: TTask) {
         return !(task.split || task.move || task.squish);

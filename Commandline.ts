@@ -159,22 +159,43 @@ export default {
 
     printTasks(tasks: TTask[]) {
         console.table(
-            Tasks.sortByStart(tasks).map((task) => ({
-                ID: task.id,
-                Name: task.name,
-                Start: Formatting.formatTime(task.start),
-                End: Formatting.formatTime(Tasks.getFinishTime(task)),
-                Length: `${Formatting.formatDuration(
-                    Tasks.getDuration(task)
-                )}m`,
-                Status: task.completedAt ? "X" : task.inProgress ? "O" : " ",
-                Category: task.category
-                    ? `${Formatting.formatCategory(task.category)}`
-                    : "",
-                Squish: task.squish ? "✓" : " ",
-                Split: task.split ? "✓" : " ",
-                Move: task.move ? "✓" : " ",
-            }))
+            Tasks.sortByStart(tasks).map((task) =>
+                task.id != undefined
+                    ? {
+                          ID: task.id,
+                          Name: task.name,
+                          Start: Formatting.formatTime(task.start),
+                          End: Formatting.formatTime(Tasks.getFinishTime(task)),
+                          Length: `${Formatting.formatDuration(
+                              Tasks.getDuration(task)
+                          )}m`,
+                          Status: task.completedAt
+                              ? "X"
+                              : task.inProgress
+                              ? "O"
+                              : " ",
+                          Category: task.category
+                              ? `${Formatting.formatCategory(task.category)}`
+                              : "",
+                          Squish: task.squish ? "✓" : " ",
+                          Split: task.split ? "✓" : " ",
+                          Move: task.move ? "✓" : " ",
+                      }
+                    : {
+                          ID: "",
+                          Name: "-----------------",
+                          Start: Formatting.formatTime(task.start),
+                          End: Formatting.formatTime(Tasks.getFinishTime(task)),
+                          Length: `${Formatting.formatDuration(
+                              Tasks.getDuration(task)
+                          )}m`,
+                          Status: "",
+                          Category: "",
+                          Squish: "",
+                          Split: "",
+                          Move: "",
+                      }
+            )
         );
     },
 
@@ -188,7 +209,7 @@ export default {
     main() {
         Data.load();
         while (1) {
-            this.printTasks(Store.tasks);
+            this.printTasks([...Store.tasks, ...Tasks.findGaps(Store.tasks)]);
             console.log(
                 `${this.SEP}\n1. Add Task\n2. Edit Task\n3. Finish Task\n4. Delete Task\n5. Run Flow\n6. Quick Add\n7. Start Task`
             );
